@@ -1,0 +1,120 @@
+/*Brent Key, 
+*Quicksort with median of three partition
+*array to sort is hardcoded
+*/
+
+import java.util.*;
+
+public class quicksort_mof3 {
+     private long[] data;  
+
+     //initialize values
+     public quicksort_mof3(int max) {
+         data = new long[max];
+         //hard coded array to sort, can be chaged, max size specified below (50)
+         data = new long[]{48, 25, 31, 32, 82, 49, 55, 50, 43, 1, 7, 25, 27, 38, 29, 55, 73, 23, 55, 20, 38, 47, 80, 36, 19, 36, 70, 84, 42, 87, 57, 24, 40, 5, 70, 96, 51, 3, 81, 12, 25, 63, 53, 26, 52, 31, 34, 23, 9, 89};
+      }
+      
+     // total number of comparisons in the algorithm, to evaluate run time
+     private static long compares;     
+     
+     //initialize compare value
+     public static void initStats() {
+        compares = 0;
+     } 
+ 
+     //counts comparisons for every compare() that is executed
+     private static boolean compare(boolean comparison) {
+          compares++;
+          return comparison;
+     }
+
+     
+     //print initial array and sorted array, print number of comparisons used in sorting
+     public void display() {
+          System.out.print("Array: ");
+          for (int index = 0; index < data.length; index++)
+               System.out.print(data[index] + " ");
+          System.out.println("\nComparisons: " + compares);
+     }
+
+     public void quickSort() {
+          recQuickSort(0, data.length - 1);
+     }
+     
+     //recursive quicksort calls to split into subsequent subarrays
+     public void recQuickSort(int left, int right) {
+          int size = right - left;
+          if (compare(size <= 2)) // manual sort if array has less than 3 elements
+               manualSort(left, right);
+          else 
+          {
+               long median = medianOf3(left, right);
+               int partition = partitionIt(left, right, median);
+               System.out.print("Trace Subarray: "); //before each recursive call, print array as is
+               for(int index = 0; index < data.length; index++)
+                    System.out.print(data[index] + " ");
+               System.out.println("");
+               recQuickSort(left, partition - 1);
+               recQuickSort(partition + 1, right);
+          }
+     }
+
+     //use first, last, and median values, arrange in order in array
+     public long medianOf3(int left, int right) {
+          int middle = (left + right) / 2;
+          if (compare(data[left] > data[middle]))
+               swap(left, middle);
+          if (compare(data[left] > data[right]))
+               swap(left, right);
+          if (compare(data[middle] > data[right]))
+               swap(middle, right);
+          swap(middle, right - 1); //swap pivot to 2nd to last position
+          return data[right - 1]; //return median value
+     }
+
+     public void swap(int index1, int index2) {
+          long temp = data[index1];
+          data[index1] = data[index2];
+          data[index2] = temp;
+     }
+
+     public int partitionIt(int left, int right, long pivot) {
+          int leftpart = left; //right of first element
+          int rightpart = right - 1; //start at pivot, 2nd before last element
+          //swap elements < pivot into left side of array and vice-versa
+          while (true) {
+          while (compare(data[++leftpart] < pivot))
+          ;
+          while (compare(data[--rightpart] > pivot))
+          ;
+          if (compare(leftpart >= rightpart)) //indexes cross, break loop
+               break;    
+          else
+               swap(leftpart, rightpart); // swap elements
+          }
+          swap(leftpart, right - 1); // restore pivot
+          return leftpart; // return pivot location
+     }
+
+     //manual sort when array/subarray is small enough
+     public void manualSort(int left, int right) {
+          int size = right - left;
+          if (compare(size <= 2))
+               return; // no sort necessary
+          else{ // 2-sort left and right
+               if (compare(data[left] > data[right]))
+                    swap(left, right);
+          return;
+          } 
+     }
+
+     public static void main(String[] args) {
+          //call new array with specified size
+          quicksort_mof3 arr = new quicksort_mof3(50);  //in brackets is size of the array 
+
+          arr.display(); //print array
+          arr.quickSort(); //sort array and print trace
+          arr.display(); //print final array and number of comparisons
+     }
+}
